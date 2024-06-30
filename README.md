@@ -23,3 +23,6 @@ There you have it! Right now, your computer will have to be on in order for the 
 - [ ] Integrate OpenAI API to pull weather data and get insights on what to wear for the day
 - [ ] Host on DigitalOcean
 - [ ] Build out frontend with dropdown options for users
+
+## Need To Fix
+- [ ] Accuracy of geocoder, maybe use different library where city name is necessary
