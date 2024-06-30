@@ -38,7 +38,7 @@ def get_weather(api_key, lat, lon, date):
             'afternoon': data['temperature']['afternoon'],
             'evening': data['temperature']['evening'],
             'night': data['temperature']['night'], 
-            'rain': data['precipitation']['total'],
+            'rain': round(data['precipitation']['total'] / 25.4, 2),
         }
         return weather
     except Exception as e:
