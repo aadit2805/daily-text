@@ -62,7 +62,7 @@ def send_sms(sid, auth_token, to_num, from_num, msg):
 def send_msg():
     weather = get_weather(api_key, lat, lon, today)
     if weather:
-        msg = f"Today's weather summary: Max Temperature: {weather['max_temp']}°F, Min Temperature: {weather['min_temp']}°F, Morning Temperature: {weather['morning']}°F, Afternoon Temperature: {weather['afternoon']}°F, Evening Temperature: {weather['evening']}°F, Night Temperature: {weather['night']}°F, Rainfall: {weather['rain']} inches."
+        msg = f"Today's weather summary for {city}: \n\nMax Temperature: {weather['max_temp']}°F\nMin Temperature: {weather['min_temp']}°F\nMorning Temperature: {weather['morning']}°F\nAfternoon Temperature: {weather['afternoon']}°F\nEvening Temperature: {weather['evening']}°F\nNight Temperature: {weather['night']}°F\nRainfall: {weather['rain']} inches."
         send_sms(sid, token, to_num, from_num, msg)
 
 send_msg()
