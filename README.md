@@ -4,6 +4,7 @@ Automates morning texts of the daily weather forecast.
 ## Setup
 1. Create environment variables for .env file
   - API Key from [OpenWeatherMap](https://openweathermap.org/api/one-call-3) (specifically One Call API 3.0, very cheap)
+  - City (i.e., College Station, TX, USA)
   - Personal phone number
   - Account SID, Auth Token, and Twilio phone number from [Twilio](twilio.com)
 2. Clone this repository.
@@ -25,4 +26,4 @@ There you have it! Right now, your computer will have to be on in order for the 
 - [ ] Build out frontend with dropdown options for users
 
 ## Need To Fix
-- [ ] Accuracy of geocoder, maybe use different library where city name is necessary
+- [x] Accuracy of geocoder, maybe use different library where city name is necessary
