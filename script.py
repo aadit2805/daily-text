@@ -47,6 +47,8 @@ def get_weather(api_key, lat, lon, date):
             'evening': data['temperature']['evening'],
             'night': data['temperature']['night'],
             'rain': round(data['precipitation']['total'] / 25.4, 2),
+            'humidity': data['humidity']['afternoon'],
+            
         }
         return weather
     except Exception as e:
@@ -69,7 +71,7 @@ def send_msg():
     if lat and lon:
         weather = get_weather(api_key, lat, lon, today)
         if weather:
-            msg = f"Today's weather summary for {city}: \n\nMax Temperature: {weather['max_temp']}°F\nMin Temperature: {weather['min_temp']}°F\nMorning Temperature: {weather['morning']}°F\nAfternoon Temperature: {weather['afternoon']}°F\nEvening Temperature: {weather['evening']}°F\nNight Temperature: {weather['night']}°F\nRainfall: {weather['rain']} inches."
+            msg = f"Today's weather summary for {city}: \n\nMax Temperature: {weather['max_temp']}°F\nMin Temperature: {weather['min_temp']}°F\nMorning Temperature: {weather['morning']}°F\nAfternoon Temperature: {weather['afternoon']}°F\nEvening Temperature: {weather['evening']}°F\nNight Temperature: {weather['night']}°F\nRainfall: {weather['rain']} inches\nHumidity: {weather['humidity']}%."
             send_sms(sid, token, to_num, from_num, msg)
     else:
         return None
