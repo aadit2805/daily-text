@@ -1,3 +1,4 @@
-source /Users/aaditshah/Documents/code/projects/weather-text/venv/bin/activate
+cd ~/Documents/code/projects/weather-text #cd into your project directory
 
-/Users/aaditshah/Documents/code/projects/weather-text/venv/bin/python3 /Users/aaditshah/Documents/code/projects/weather-text/script.py
+source ./venv/bin/activate
+./venv/bin/python3 script.py
