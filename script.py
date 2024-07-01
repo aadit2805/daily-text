@@ -36,39 +36,32 @@ else:
 
 # get weather data
 def get_weather(api_key, lat, lon, date):
-    try:
-        url = f'https://api.openweathermap.org/data/3.0/onecall/day_summary?lat={lat}&lon={lon}&date={date}&units=imperial&appid={api_key}'
-        response = requests.get(url)
-        data = response.json()  # grabs data
+    url = f'https://api.openweathermap.org/data/3.0/onecall/day_summary?lat={lat}&lon={lon}&date={date}&units=imperial&appid={api_key}'
+    response = requests.get(url)
+    data = response.json()  # grabs data
 
-        # extract data
-        weather = {
-            'max_temp': data['temperature']['max'],
-            'min_temp': data['temperature']['min'],
-            'morning': data['temperature']['morning'],
-            'afternoon': data['temperature']['afternoon'],
-            'evening': data['temperature']['evening'],
-            'night': data['temperature']['night'],
-            'rain': round(data['precipitation']['total'] / 25.4, 2),
-            'humidity': data['humidity']['afternoon'],
+    # extract data
+    weather = {
+        'max_temp': data['temperature']['max'],
+        'min_temp': data['temperature']['min'],
+        'morning': data['temperature']['morning'],
+        'afternoon': data['temperature']['afternoon'],
+        'evening': data['temperature']['evening'],
+        'night': data['temperature']['night'],
+        'rain': round(data['precipitation']['total'] / 25.4, 2),
+        'humidity': data['humidity']['afternoon'],
             
-        }
-        return weather
-    except Exception as e:
-        return None
-
+    }
+    return weather
 
 # send the twilio sms
 def send_sms(sid, auth_token, to_num, from_num, msg):
-    try:
-        client = Client(sid, auth_token)  # creates the client object
-        message = client.messages.create(  # twilio function, takes in 3 parameters (text, from, to)
-            body=msg,
-            from_=from_num,
-            to=to_num
-        )
-    except Exception as e:
-        return None
+    client = Client(sid, auth_token)  # creates the client object
+    message = client.messages.create(  # twilio function, takes in 3 parameters (text, from, to)
+        body=msg,
+        from_=from_num,
+        to=to_num
+    )
 
 # function to call GPT API
 def get_gpt(model_name, system_msg, user_msg):
@@ -76,7 +69,7 @@ def get_gpt(model_name, system_msg, user_msg):
     response = client.completions.create(
         model=model_name,
         prompt=f"{system_msg} {user_msg}",
-        max_tokens=2500
+        max_tokens=3990
     )
     return response.choices[0].text.strip()
 
@@ -85,9 +78,10 @@ def send_msg():
     if lat and lon:
         weather = get_weather(api_key, lat, lon, today)
         if weather:
+            model = "gpt-3.5-turbo-instruct"
             system_msg = "You are a helpful assistant who is being given information about the weather, and will help with picking out someone's outfit based on the weather."
             user_msg = f"What should I wear given this weather data: {weather}"
-            gpt_msg = get_gpt("gpt-3.5-turbo-instruct", system_msg, user_msg)
+            gpt_msg = get_gpt(model, system_msg, user_msg)
             msg = (f"Today's weather summary for {city}:\n\n"
                    f"High: {weather['max_temp']}°F\n"
                    f"Low: {weather['min_temp']}°F\n"
@@ -99,7 +93,5 @@ def send_msg():
                    f"Humidity: {weather['humidity']}%\n\n"
                    f"What you should wear: {gpt_msg}")
             send_sms(sid, token, to_num, from_num, msg)
-    else:
-        return None
 
 send_msg()
