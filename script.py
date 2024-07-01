@@ -9,19 +9,27 @@ import geocoder
 load_dotenv()
 
 # assign keys to variables
-api_key = os.getenv('API_KEY')
-sid = os.getenv('SID')
-token = os.getenv('TOKEN')
-to_num = os.getenv('TO_NUM')
-from_num = os.getenv('FROM_NUM')
+api_key = os.getenv('api_key')
+sid = os.getenv('sid')
+token = os.getenv('token')
+to_num = os.getenv('to_num')
+from_num = os.getenv('from_num')
+city = os.getenv('city')
+today = date.today().isoformat()  # need for api call
 
-#need for api call
-geo = geocoder.ip('me') 
-lat = geo.latlng[0]
-lon = geo.latlng[1]
-city = geo.city
+# get latitude and longitude of the city
+def get_coords(city):
+    geo = geocoder.arcgis(city)
+    if geo.ok:
+        return (geo.latlng[0], geo.latlng[1])
+    else:
+        return None
 
-today = date.today().isoformat() #need for api call
+coords = get_coords(city)
+if coords:
+    lat, lon = coords
+else:
+    lat, lon = None, None
 
 # get weather data
 def get_weather(api_key, lat, lon, date):
@@ -37,32 +45,33 @@ def get_weather(api_key, lat, lon, date):
             'morning': data['temperature']['morning'],
             'afternoon': data['temperature']['afternoon'],
             'evening': data['temperature']['evening'],
-            'night': data['temperature']['night'], 
+            'night': data['temperature']['night'],
             'rain': round(data['precipitation']['total'] / 25.4, 2),
         }
         return weather
     except Exception as e:
-        print(f"failed to retrieve weather data: {e}")
         return None
 
 # send the twilio sms
 def send_sms(sid, auth_token, to_num, from_num, msg):
     try:
         client = Client(sid, auth_token)  # creates the client object
-        message = client.messages.create(  # Twilio function, takes in 3 parameters (text, from, to)
+        message = client.messages.create(  # twilio function, takes in 3 parameters (text, from, to)
             body=msg,
             from_=from_num,
             to=to_num
         )
     except Exception as e:
-        print(f"failed to send SMS: {e}")
         return None
 
 # calls the sms function and inputs the data to send the message
 def send_msg():
-    weather = get_weather(api_key, lat, lon, today)
-    if weather:
-        msg = f"Today's weather summary for {city}: \n\nMax Temperature: {weather['max_temp']}°F\nMin Temperature: {weather['min_temp']}°F\nMorning Temperature: {weather['morning']}°F\nAfternoon Temperature: {weather['afternoon']}°F\nEvening Temperature: {weather['evening']}°F\nNight Temperature: {weather['night']}°F\nRainfall: {weather['rain']} inches."
-        send_sms(sid, token, to_num, from_num, msg)
+    if lat and lon:
+        weather = get_weather(api_key, lat, lon, today)
+        if weather:
+            msg = f"Today's weather summary for {city}: \n\nMax Temperature: {weather['max_temp']}°F\nMin Temperature: {weather['min_temp']}°F\nMorning Temperature: {weather['morning']}°F\nAfternoon Temperature: {weather['afternoon']}°F\nEvening Temperature: {weather['evening']}°F\nNight Temperature: {weather['night']}°F\nRainfall: {weather['rain']} inches."
+            send_sms(sid, token, to_num, from_num, msg)
+    else:
+        return None
 
 send_msg()
